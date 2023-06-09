@@ -17,8 +17,12 @@ jobs:
           pkg-manager: pip
       - run:
           name: Run tests
-          command: pytest tests
-
+          command: pytest tests --junit-xml=test-results/test_report.xml
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: test-results
+          destination: test-results
 workflows:
   main:
     jobs:
