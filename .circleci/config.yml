@@ -14,7 +14,7 @@ jobs:
           name: Build a python wheel
           command: python setup.py bdist_wheel
       - store_artifacts:
-          path: dist/*.whl
+          path: dist
 
       - python/install-packages:
           pkg-manager: pip
@@ -36,15 +36,15 @@ workflows:
   version: 2
   pr_workflow:
     jobs:
-      - build-and-test
-    filters:
-      branches:
-        only:
-          - main
-      tags:
-        ignore:
-          - "*"
-      pull-requests:
-        only:
+      - build-and-test:
+        filters:
           branches:
-            - main
+            only:
+              - main
+          tags:
+            ignore:
+              - "*"
+          pull-requests:
+            only:
+              branches:
+                - main
