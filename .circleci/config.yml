@@ -9,12 +9,20 @@ jobs:
       - image: cimg/python:3.10.2
     steps:
       - checkout
+
+      - run:
+          name: Build a python wheel
+          command: python setup.py bdist_wheel
+      - store_artifacts:
+          path: dist/*.whl
+
       - python/install-packages:
           pkg-manager: pip
       - python/install-packages:
           app-dir: reqs_optional
           pip-dependency-file: requirements_optional_8bit.txt
           pkg-manager: pip
+
       - run:
           name: Run tests
           command: pytest tests --junit-xml=test-results/test_report.xml
@@ -23,7 +31,20 @@ jobs:
       - store_artifacts:
           path: test-results
           destination: test-results
+
 workflows:
-  main:
+  version: 2
+  pr_workflow:
     jobs:
       - build-and-test
+    filters:
+      branches:
+        only:
+          - main
+      tags:
+        ignore:
+          - "*"
+      pull-requests:
+        only:
+          branches:
+            - main
