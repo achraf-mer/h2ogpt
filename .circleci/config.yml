@@ -1,12 +1,24 @@
 version: 2.1
 
 orbs:
-  python: cimg/base:stable
-commands:
-  install-deps:
+  python: circleci/python@2.1.1
+
+parameters:
+  build-only:
+    type: boolean
+    default: false
+  run-full-suite:
+    type: boolean
+    default: false
+
+jobs:
+  build-and-test:
     description: |
-      Install apt and python
+      Build and basic tests
+    docker:
+      - image: nvidia/cuda:12.1.0-devel-ubuntu22.04
     steps:
+      - checkout
       - run:
         command: |
           apt-get update
@@ -17,28 +29,16 @@ commands:
           apt install -y python3.10 python3-dev
           rm -rf /var/lib/apt/lists/*
           curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
-  build-wheel:
-    description: |
-      Build python wheel
-    steps:
       - run:
           name: Build a python wheel
           command: python setup.py bdist_wheel
       - store_artifacts:
           path: dist
-  install-python-deps:
-    description: |
-      Install python packages
-    steps:
       - run:
           name: Install deps
           command: |
             python3.10 -m pip install -r requirements.txt
             python3.10 -m pip install -r reqs_optional/requirements_optional_8bit.txt
-  run-tests:
-    description: |
-      Install python packages
-    steps:
       - run:
           name: Run tests
           command: python3.10 -m pytest tests --junit-xml=test-results/test_report.xml
@@ -47,44 +47,7 @@ commands:
       - store_artifacts:
           path: test-results
           destination: test-results
-executors:
-  python:
-    description: |
-        Default executor for cuda 12.1
-    docker:
-      - image: nvidia/cuda:<< parameters.cuda-version >>-devel-ubuntu22.04
-        parameters:
-          cuda-version:
-            default: "12.1.0"
-            description: |
-              CUDA version
-            type: string
-parameters:
-  build-only:
-    type: boolean
-    default: false
-  run-full-suite:
-    type: boolean
-    default: false
-jobs:
-  build-and-test:
-    description: |
-      Build and basic tests
-    executor:
-      name: python
-      cuda-version: << parameters.cuda-version >>
-    parameters:
-      cuda-version:
-        default: "12.1.0"
-        description: |
-          CUDA version
-        type: string
-    steps:
-      - checkout
-      - install-deps
-      - build-wheel
-      - install-python-deps
-      - run-tests
+
 workflows:
   version: 2
   pr-workflow-test:
