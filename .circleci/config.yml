@@ -2,26 +2,21 @@ version: 2.1
 
 orbs:
   python: cimg/base:stable
-
 commands:
-
   install-deps:
     description: |
       Install apt and python
     steps:
       - run:
-        name: Install base apt dependencies
         command: |
           apt-get update
           apt-get install -y git curl wget software-properties-common pandoc
       - run:
-        name: Install python 3.10
         command: |
           add-apt-repository ppa:deadsnakes/ppa
           apt install -y python3.10 python3-dev
           rm -rf /var/lib/apt/lists/*
           curl -sS https://bootstrap.pypa.io/get-pip.py | python3.10
-
   build-wheel:
     description: |
       Build python wheel
@@ -31,7 +26,6 @@ commands:
           command: python setup.py bdist_wheel
       - store_artifacts:
           path: dist
-
   install-python-deps:
     description: |
       Install python packages
@@ -41,7 +35,6 @@ commands:
           command: |
             python3.10 -m pip install -r requirements.txt
             python3.10 -m pip install -r reqs_optional/requirements_optional_8bit.txt
-
   run-tests:
     description: |
       Install python packages
@@ -54,7 +47,6 @@ commands:
       - store_artifacts:
           path: test-results
           destination: test-results
-
 executors:
   python:
     description: |
@@ -67,16 +59,13 @@ executors:
             description: |
               CUDA version
             type: string
-
 parameters:
   build-only:
     type: boolean
     default: false
-
   run-full-suite:
     type: boolean
     default: false
-
 jobs:
   build-and-test:
     description: |
@@ -96,7 +85,6 @@ jobs:
       - build-wheel
       - install-python-deps
       - run-tests
-
 workflows:
   version: 2
   pr-workflow-test:
@@ -115,7 +103,6 @@ workflows:
             only:
               branches:
                 - main
-
   pr-workflow-build:
     when: << pipeline.parameters.build-only >>
     jobs:
