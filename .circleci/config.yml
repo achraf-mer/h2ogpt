@@ -39,7 +39,10 @@ jobs:
           name: Install deps
           command: |
             python3.10 -m pip install -r requirements.txt
-            python3.10 -m pip install -r reqs_optional/requirements_optional_8bit.txt
+            python3.10 -m pip install -r reqs_optional/requirements_optional_4bit.txt
+            python3.10 -m pip install -r reqs_optional/requirements_optional_langchain.txt
+            python3.10 -m pip install -r reqs_optional/requirements_optional_langchain.gpllike.txt
+            python3.10 -m pip install -r reqs_optional/requirements_optional_gpt4all.txt
       - run:
           name: Run tests
           command: python3.10 -m pytest tests --junit-xml=test-results/test_report.xml
