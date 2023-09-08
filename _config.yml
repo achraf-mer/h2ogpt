@@ -6,4 +6,10 @@ relative_links:
 include:
   - README.md
 exclude:
-  - *
+  - src
+  - spaces
+  - ci
+  - tests
+  - client
+  - data
+  - cloud
